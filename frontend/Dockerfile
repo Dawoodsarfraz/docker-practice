@@ -1,20 +1,18 @@
-# Use Python 3.11 slim image
 FROM python:3.11-slim
 
-# Set working directory
-WORKDIR /app
+WORKDIR /frontend
 
-# Copy pyproject.toml for dependency installation
-COPY pyproject.toml . 
+# Install system dependencies
+RUN apt-get update && apt-get install -y build-essential curl && rm -rf /var/lib/apt/lists/*
 
-# Install dependencies using uv
-RUN uv sync
+# Install Python packages globally
+COPY pyproject.toml .
+RUN pip install --upgrade pip uv streamlit watchdog
 
-# Copy the rest of your frontend code
+# Copy the rest of your code
 COPY . .
 
-# Expose Streamlit default port
 EXPOSE 8501
 
 # Run Streamlit
-CMD ["streamlit", "run", "app.py", "--server.port=8501", "--server.address=0.0.0.0"]
+CMD ["streamlit", "run", "main.py", "--server.port=8501", "--server.address=0.0.0.0"]

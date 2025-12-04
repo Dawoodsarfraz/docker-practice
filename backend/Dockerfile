@@ -1,18 +1,23 @@
-# Use Python 3.11 base image
-FROM python:3.11-slim
+FROM python:3.11
 
-# Set working directory
 WORKDIR /backend
 
-# Copy pyproject.toml and install dependencies using uv
-COPY pyproject.toml . 
-RUN uv sync
+# Install system dependencies
+RUN apt-get update && apt-get install -y build-essential curl && rm -rf /var/lib/apt/lists/*
 
-# Copy the rest of the application code
+# Install uv
+RUN pip install uv
+
+# Copy pyproject.toml first
+COPY pyproject.toml .
+
+# Install dependencies
+RUN uv pip install --system -e .
+
+# Copy backend code
 COPY . .
 
-# Expose FastAPI port
 EXPOSE 8000
 
-# Run FastAPI using uvicorn
-CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+# Run FastAPI
+CMD ["python", "-m", "uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]

@@ -13,7 +13,7 @@ def home():
 
 @app.get("/favicon.ico")
 def favicon():
-    return FileResponse("favicon.ico")  # put a favicon.ico in the same folder
+    return FileResponse("./assets/favicon.gif")  # put a favicon.ico in the same folder
 
 # machine readable
 @app.get('/health')
